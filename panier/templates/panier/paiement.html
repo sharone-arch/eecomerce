@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement - commerceligne</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <style>
+        :root {
+            --main-blue: #0d6efd;
+            --gradient-blue: linear-gradient(135deg, #0d6efd 0%, #003d99 100%);
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        .navbar { background: var(--gradient-blue) !important; padding: 1rem 0; }
+        .payment-container { max-width: 800px; margin: 50px auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .btn-confirm { background: var(--gradient-blue); color: white; border-radius: 50px; padding: 12px 30px; font-weight: 600; width: 100%; border: none; transition: 0.3s; }
+        .btn-confirm:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); color: white; }
+
+        .payment-method { border: 2px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 15px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; }
+        .payment-method:hover { border-color: var(--main-blue); background: #f1f7ff; }
+        .payment-method input { margin-right: 15px; }
+        .total-section { background: #f1f7ff; border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .d-none { display: none !important; }
+        .mb-3 input { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container">
+        <a class="navbar-brand text-white fw-bold" href="{% url 'liste_produits' %}">commerceligne</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="payment-container">
+        <h2 class="fw-bold mb-4">
+            <i class="fas fa-credit-card me-2 text-primary"></i>Choisir un mode de paiement
+        </h2>
+
+        <!-- Bloc pour messages d'erreur ou succès -->
+        {% if messages %}
+            <div class="mb-3">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" id="paiement-form">
+            {% csrf_token %}
+
+            <!-- Mobile Money -->
+            <label class="payment-method">
+                <input type="radio" name="mode_paiement" value="Mobile Money" required>
+                <i class="fas fa-mobile-alt me-2 text-primary"></i> Mobile Money
+            </label>
+            <div class="mb-3 ms-4 d-none" id="mobile-money-fields">
+                <input type="text" name="numero_mobile" class="form-control" placeholder="Numéro Mobile Money">
+            </div>
+
+            <!-- Orange Money -->
+            <label class="payment-method">
+                <input type="radio" name="mode_paiement" value="Orange Money" required>
+                <i class="fas fa-mobile-alt me-2 text-warning"></i> Orange Money
+            </label>
+            <div class="mb-3 ms-4 d-none" id="orange-money-fields">
+                <input type="text" name="numero_orange" class="form-control" placeholder="Numéro Orange Money">
+            </div>
+
+            <!-- Carte bancaire -->
+            <label class="payment-method">
+                <input type="radio" name="mode_paiement" value="Carte bancaire" required>
+                <i class="fas fa-credit-card me-2 text-primary"></i> Carte bancaire
+            </label>
+            <div class="mb-3 ms-4 d-none" id="carte-fields">
+                <input type="text" name="numero_carte" class="form-control mb-2" placeholder="Numéro de la carte">
+                <input type="text" name="date_exp" class="form-control mb-2" placeholder="MM/AA">
+                <input type="text" name="cvc" class="form-control" placeholder="CVC">
+            </div>
+
+            <!-- Paiement à la livraison -->
+            <label class="payment-method">
+                <input type="radio" name="mode_paiement" value="Paiement à la livraison" required>
+                <i class="fas fa-truck me-2 text-primary"></i> Paiement à la livraison
+            </label>
+
+            <button type="submit" class="btn btn-confirm mt-4 w-100">Confirmer la commande</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const radios = document.querySelectorAll('input[name="mode_paiement"]');
+    const mobileFields = document.getElementById('mobile-money-fields');
+    const orangeFields = document.getElementById('orange-money-fields');
+    const carteFields = document.getElementById('carte-fields');
+    const form = document.getElementById('paiement-form');
+
+    // Affichage conditionnel des champs selon le moyen choisi
+    radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            mobileFields.classList.add('d-none');
+            orangeFields.classList.add('d-none');
+            carteFields.classList.add('d-none');
+
+            if(radio.value === 'Mobile Money') mobileFields.classList.remove('d-none');
+            if(radio.value === 'Orange Money') orangeFields.classList.remove('d-none');
+            if(radio.value === 'Carte bancaire') carteFields.classList.remove('d-none');
+        });
+    });
+
+    // Validation côté client avant envoi
+    form.addEventListener('submit', function(e){
+        const mode = document.querySelector('input[name="mode_paiement"]:checked').value;
+
+        if(mode === 'Mobile Money'){
+            const num = document.querySelector('input[name="numero_mobile"]').value;
+            if(!/^\d{9}$/.test(num) || !(num.startsWith('67') || num.startsWith('69'))){
+                alert("Numéro MTN Mobile Money invalide (doit commencer par 67 ou 69 et contenir 9 chiffres).");
+                e.preventDefault();
+                return;
+            }
+        }
+
+        if(mode === 'Orange Money'){
+            const num = document.querySelector('input[name="numero_orange"]').value;
+            if(!/^\d{9}$/.test(num) || !num.startsWith('69')){
+                alert("Numéro Orange Money invalide (doit commencer par 69 et contenir 9 chiffres).");
+                e.preventDefault();
+                return;
+            }
+        }
+
+        if(mode === 'Carte bancaire'){
+            const num = document.querySelector('input[name="numero_carte"]').value.replace(/\s+/g,'');
+            const date = document.querySelector('input[name="date_exp"]').value;
+            const cvc = document.querySelector('input[name="cvc"]').value;
+
+            if(!/^\d{16}$/.test(num)){
+                alert("Numéro de carte invalide (16 chiffres).");
+                e.preventDefault();
+                return;
+            }
+
+            if(!/^\d{2}\/\d{2}$/.test(date)){
+                alert("Format de date invalide. Utilisez MM/AA.");
+                e.preventDefault();
+                return;
+            }
+
+            const [mois, annee] = date.split('/').map(Number);
+            const now = new Date();
+            const currentYear = now.getFullYear() % 100;
+            const currentMonth = now.getMonth() + 1;
+
+            if(mois < 1 || mois > 12 || annee < currentYear || (annee === currentYear && mois < currentMonth)){
+                alert("Date d'expiration invalide ou déjà passée.");
+                e.preventDefault();
+                return;
+            }
+
+            if(!/^\d{3}$/.test(cvc)){
+                alert("Le CVC doit contenir 3 chiffres.");
+                e.preventDefault();
+                return;
+            }
+        }
+    });
+</script>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

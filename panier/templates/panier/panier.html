@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Panier - commerceligne</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <style>
+        :root {
+            --main-blue: #0d6efd;
+            --gradient-blue: linear-gradient(135deg, #0d6efd 0%, #003d99 100%);
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        .navbar { background: var(--gradient-blue) !important; padding: 1rem 0; }
+        .cart-container { margin-top: 50px; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .product-img-cart { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; }
+        .total-section { background: #f1f7ff; border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .btn-order { background: var(--gradient-blue); color: white; border-radius: 50px; padding: 12px 30px; font-weight: 600; width: 100%; border: none; transition: 0.3s; }
+        .btn-order:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); color: white; }
+
+        .qty-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-qty { 
+            width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd;
+            display: flex; align-items: center; justify-content: center;
+            background: white; color: var(--main-blue); text-decoration: none; transition: 0.2s;
+        }
+        .btn-qty:hover { background: var(--main-blue); color: white; border-color: var(--main-blue); }
+        .btn-delete { color: #dc3545; transition: 0.2s; }
+        .btn-delete:hover { color: #a71d2a; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container">
+        <a class="navbar-brand text-white fw-bold" href="{% url 'liste_produits' %}">commerceligne</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="cart-container">
+        <h2 class="fw-bold mb-4">
+            <i class="fas fa-shopping-cart me-2 text-primary"></i>Votre Panier
+        </h2>
+
+        {% if articles %}
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Produit</th>
+                        <th>Prix</th>
+                        <th class="text-center">Quantité</th>
+                        <th>Total</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in articles %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ item.produit.image.url }}" class="product-img-cart me-3">
+                                <span class="fw-bold">{{ item.produit.nom }}</span>
+                            </div>
+                        </td>
+                        <td>{{ item.produit.prix }} FCFA</td>
+                        <td>
+                            <div class="qty-controls">
+                                <a href="{% url 'retirer_du_panier' item.produit.id %}" class="btn-qty">
+                                    <i class="fas fa-minus"></i>
+                                </a>
+                                <span class="fw-bold fs-5">{{ item.quantite }}</span>
+                                <a href="{% url 'ajouter_au_panier' item.produit.id %}" class="btn-qty">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
+                        </td>
+                        <td class="fw-bold text-primary">{{ item.total_ligne }} FCFA</td>
+                        <td class="text-end">
+                            <a href="{% url 'supprimer_du_panier' item.produit.id %}" class="btn-delete">
+                                <i class="fas fa-trash-alt fa-lg"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <div class="total-section">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Sous-total :</span>
+                        <span class="fw-bold">{{ total_general }} FCFA</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="h5 fw-bold">TOTAL :</span>
+                        <span class="h5 fw-bold text-primary">{{ total_general }} FCFA</span>
+                    </div>
+
+                    <!-- Bouton Paiement -->
+                    <a href="{% url 'paiement' %}" class="btn btn-order mb-2">
+                        <i class="fas fa-credit-card me-2"></i> Passer au paiement
+                    </a>
+
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/237692962370?text={{ message_whatsapp }}" class="btn btn-success w-100 mt-2">
+                        <i class="fab fa-whatsapp me-2"></i> Commander via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <p class="text-center py-5 text-muted">Votre panier est vide.</p>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{% url 'liste_produits' %}" class="text-decoration-none text-muted">
+                <i class="fas fa-arrow-left me-2"></i>Continuer mes achats
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

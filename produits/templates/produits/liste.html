@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique FCFA - Produits</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+
+    <style>
+        :root {
+            --main-blue: #0d6efd;
+            --dark-blue: #003d99;
+            --gradient-blue: linear-gradient(135deg, #0d6efd 0%, #003d99 100%);
+            --whatsapp-green: #25D366;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* --- NAVIGATION & RECHERCHE --- */
+        .navbar {
+            background: var(--gradient-blue) !important;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .navbar-brand, .nav-link { color: white !important; font-weight: 500; }
+        .search-bar { max-width: 250px; }
+        .search-bar .form-control { border-radius: 20px; border: none; padding-left: 40px; }
+        .search-container { position: relative; }
+        .search-container i {
+            position: absolute; left: 15px; top: 50%;
+            transform: translateY(-50%); color: var(--main-blue);
+        }
+
+        /* --- CADRES BLEUS --- */
+        .blue-float-card { 
+            background: var(--gradient-blue);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.2);
+            animation: floating 4s ease-in-out infinite;
+            border: none;
+        }
+
+        .hero-container { padding: 100px 0; margin-bottom: 50px; text-align: center; border-radius: 0 0 50px 50px; }
+        
+        /* --- CARTES PRODUITS --- */
+        .card {
+            border: none;
+            border-radius: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card:hover { transform: translateY(-12px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .card-img-top { height: 280px; object-fit: cover; border-radius: 15px 15px 0 0; }
+
+        /* --- SECTION COMMENTAIRES --- */
+        .comment-section { margin: 80px 0; }
+        .comment-card {
+            background: white; padding: 20px; border-radius: 15px;
+            margin-bottom: 20px; border-left: 5px solid var(--main-blue);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.5s ease;
+        }
+        .user-icon {
+            width: 50px; height: 50px; background: var(--gradient-blue);
+            color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 20px; margin-right: 15px;
+        }
+
+        /* --- FOOTER --- */
+        footer { padding: 60px 0; background-color: #f8f9fa; }
+        .footer-box { height: 100%; }
+        .footer-box a { color: rgba(255,255,255,0.9) !important; text-decoration: none; transition: 0.3s; }
+        .footer-box a:hover { color: #ffc107 !important; padding-left: 5px; }
+
+        /* --- WHATSAPP --- */
+        .whatsapp-float {
+            position: fixed; bottom: 30px; right: 30px; background-color: var(--whatsapp-green);
+            color: white; width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 30px;
+            z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: floating 3s ease-in-out infinite;
+        }
+
+        [data-animate] { opacity: 0; transform: translateY(30px); transition: 0.8s ease-out; }
+        [data-animate].visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'liste_produits' %}">
+            <i class="fas fa-shopping-bag me-2"></i>commerceligne
+        </a>
+        
+        <button class="navbar-toggler text-white border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="d-flex search-bar ms-lg-4 my-2 my-lg-0" action="{% url 'liste_produits' %}" method="GET">
+                <div class="search-container w-100">
+                    <i class="fas fa-search"></i>
+                    <input class="form-control" type="search" placeholder="Rechercher..." name="q" value="{{ request.GET.q|default:'' }}">
+                </div>
+            </form>
+            
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="{% url 'liste_produits' %}"><i class="fas fa-home"></i> Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'a_propos' %}"><i class="fas fa-info-circle"></i> À propos</a></li>
+                
+                <li class="nav-item ms-lg-3">
+                    <a href="{% url 'voir_panier' %}" class="btn btn-outline-light position-relative px-3 rounded-pill">
+                        <i class="fas fa-shopping-cart me-1"></i> Panier
+                        {% if compteur_panier > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow">
+                            {{ compteur_panier }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show rounded-pill shadow-sm" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<a href="https://wa.me/237692962370" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+<div class="hero-container blue-float-card">
+    <div class="container" data-animate>
+        {% if request.GET.q %}
+            <h2><i class="fas fa-search me-2"></i>Résultats pour "{{ request.GET.q }}"</h2>
+            <p>{{ produits|length }} produit(s) trouvé(s)</p>
+        {% else %}
+            <h2><i class="fas fa-star me-2"></i>Bienvenue sur commerceligne</h2>
+            <p>Qualité supérieure, prix imbattables au Cameroun.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="d-flex justify-content-center flex-wrap gap-2" data-animate>
+        <a href="{% url 'liste_produits' %}" 
+           class="btn {% if not request.GET.cat %}btn-primary text-white{% else %}btn-outline-primary{% endif %} rounded-pill px-4 shadow-sm">
+            Tout
+        </a>
+
+        {% for cat in categories %}
+            <a href="{% url 'liste_produits' %}?cat={{ cat.slug }}" 
+               class="btn {% if request.GET.cat == cat.slug %}btn-primary text-white{% else %}btn-outline-primary{% endif %} rounded-pill px-4 shadow-sm">
+                {{ cat.nom }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container mb-5">
+    <h1 class="text-center mb-5 fw-bold" data-animate>Nos Produits</h1>
+    <div class="row g-4"> 
+        {% for produit in produits %}
+        <div class="col-sm-6 col-md-4 col-lg-3" data-animate>
+            <div class="card h-100 shadow-sm text-center">
+                <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="fw-bold">{{ produit.nom }}</h5>
+                    <p class="text-primary fw-bold">{{ produit.prix }} FCFA</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'ajouter_au_panier' produit.id %}" class="btn btn-primary w-100 rounded-pill mb-2">
+                            <i class="fas fa-cart-plus me-1"></i> Ajouter au panier
+                        </a>
+                        <a href="{% url 'detail_produit' produit.pk %}" class="btn btn-outline-secondary btn-sm w-100 rounded-pill">
+                            <i class="fas fa-eye me-1"></i> Détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5" data-animate>
+            <div class="blue-float-card d-inline-block px-5">
+                <i class="fas fa-frown fa-3x mb-3"></i>
+                <h4>Aucun résultat</h4>
+                <p>Désolé, nous n'avons rien trouvé.</p>
+                <a href="{% url 'liste_produits' %}" class="btn btn-warning fw-bold rounded-pill text-dark">Voir tout</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container comment-section">
+    <h2 class="fw-bold mb-4" data-animate><i class="fas fa-comments me-2 text-primary"></i>Avis de nos clients</h2>
+    <div class="row g-4">
+        <div class="col-md-8" id="comments-container">
+            <div class="comment-card d-flex align-items-center" data-animate>
+                <div class="user-icon"><i class="fas fa-user"></i></div>
+                <div>
+                    <h6 class="fw-bold mb-1">Jean Dupont</h6>
+                    <p class="mb-0 text-muted small">Service impeccable et produits authentiques.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" data-animate>
+            <div class="blue-float-card shadow">
+                <h5 class="mb-3">Laissez un avis</h5>
+                <form id="comment-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="text" id="user-name" class="form-control" placeholder="Votre nom" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea id="user-msg" class="form-control" rows="2" placeholder="Votre message..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold rounded-pill text-dark">Envoyer l'avis</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4" data-animate>
+                <div class="blue-float-card footer-box">
+                    <h5><i class="fas fa-store me-2"></i>commerceligne</h5>
+                    <p>Votre boutique de confiance au Cameroun.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-animate>
+                <div class="blue-float-card footer-box" style="animation-delay: 0.3s;">
+                    <h5><i class="fas fa-link me-2"></i>Navigation</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'liste_produits' %}">Accueil</a></li>
+                        <li><a href="{% url 'a_propos' %}">À propos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4" data-animate>
+                <div class="blue-float-card footer-box" style="animation-delay: 0.6s;">
+                    <h5><i class="fas fa-phone-alt me-2"></i>Contact</h5>
+                    <p class="small">+237 692962370</p>
+                </div>
+            </div>
+        </div>
+        <hr class="my-5">
+        <p class="text-center text-muted small">&copy; 2026 commerceligne FCFA.</p>
+    </div>
+</footer>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+    // --- Animation d'entrée ---
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+    // --- Fermeture automatique des messages après 5 secondes ---
+    setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            let bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+
+    // --- Gestion des commentaires ---
+    document.getElementById('comment-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('user-name').value;
+        const msg = document.getElementById('user-msg').value;
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'comment-card d-flex align-items-center visible';
+        commentDiv.innerHTML = `
+            <div class="user-icon"><i class="fas fa-user"></i></div>
+            <div>
+                <h6 class="fw-bold mb-1">${name}</h6>
+                <p class="mb-0 text-muted small">${msg}</p>
+            </div>
+        `;
+        document.getElementById('comments-container').prepend(commentDiv);
+        this.reset();
+    });
+</script>
+</body>
+</html>

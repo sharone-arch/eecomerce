@@ -1,0 +1,134 @@
+<style>
+    .order-history-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 800px;
+        margin: 20px auto;
+        color: #333;
+    }
+
+    .order-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+        border-left: 5px solid #2ecc71; /* Couleur accentuation */
+    }
+
+    .order-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-id {
+        font-weight: bold;
+        color: #2c3e50;
+        font-size: 1.1em;
+    }
+
+    .order-date {
+        color: #7f8c8d;
+        font-size: 0.9em;
+    }
+
+    .order-body {
+        padding: 20px;
+    }
+
+    .product-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .product-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #eee;
+    }
+
+    .product-item:last-child {
+        border-bottom: none;
+    }
+
+    .product-info {
+        flex-grow: 1;
+    }
+
+    .product-name {
+        font-weight: 600;
+        display: block;
+    }
+
+    .product-details {
+        font-size: 0.85em;
+        color: #666;
+    }
+
+    .line-total {
+        font-weight: bold;
+        color: #34495e;
+    }
+
+    .order-footer {
+        padding: 15px 20px;
+        background: #fff;
+        text-align: right;
+        border-top: 1px solid #eee;
+    }
+
+    .total-amount {
+        font-size: 1.2em;
+        color: #e67e22;
+        font-weight: 800;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px;
+        color: #bdc3c7;
+    }
+</style>
+
+<div class="order-history-container">
+    <h2><i class="fas fa-shopping-bag"></i> Mon Historique des Commandes</h2>
+
+    {% for commande in commandes %}
+    <div class="order-card">
+        <div class="order-header">
+            <span class="order-id">Commande #{{ commande.id }}</span>
+            <span class="order-date"><i class="far fa-calendar-alt"></i> {{ commande.date|date:"d/m/Y H:i" }}</span>
+        </div>
+
+        <div class="order-body">
+            <ul class="product-list">
+                {% for ligne in commande.lignes.all %}
+                <li class="product-item">
+                    <div class="product-info">
+                        <span class="product-name">{{ ligne.produit.nom }}</span>
+                        <span class="product-details">{{ ligne.quantite }} x {{ ligne.prix }} FCFA</span>
+                    </div>
+                    <div class="line-total">
+                        {{ ligne.total_ligne }} FCFA
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="order-footer">
+            <span>Total Payé : </span>
+            <span class="total-amount">{{ commande.total }} FCFA</span>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <p>Vous n'avez pas encore passé de commande.</p>
+    </div>
+    {% endfor %}
+</div>
