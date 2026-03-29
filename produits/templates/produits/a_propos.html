@@ -5,76 +5,152 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>À propos</title>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
+            background: #f4f7fb;
             color: #333;
         }
+
         header {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
-            padding: 20px;
+            padding: 40px 20px;
             text-align: center;
         }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
         main {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 40px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
         }
-        h1, h2 {
-            color: #4CAF50;
+
+        h2 {
+            color: #1e3c72;
+            margin-top: 25px;
         }
+
         p {
-            line-height: 1.6;
+            line-height: 1.7;
+            font-size: 1.05em;
         }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .highlight {
+            background: #e8f0ff;
+            padding: 15px;
+            border-left: 5px solid #2a5298;
+            border-radius: 6px;
+        }
+
         footer {
             text-align: center;
             padding: 20px;
-            color: #777;
-            font-size: 0.9em;
+            background: #1e3c72;
+            color: white;
+            margin-top: 40px;
         }
+
         a {
-            color: #4CAF50;
+            color: #2a5298;
+            font-weight: bold;
             text-decoration: none;
         }
+
         a:hover {
             text-decoration: underline;
         }
+
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #2a5298;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #1e3c72;
+        }
     </style>
 </head>
-<body>
-    <header>
-        <h1>À propos de notre boutique</h1>
-    </header>
 
-    <main>
+<body>
+
+<header>
+    <h1>À propos de notre boutique</h1>
+    <p>Votre plateforme e-commerce fiable et moderne</p>
+</header>
+
+<main>
+
+    <div class="section">
         <h2>Notre mission</h2>
         <p>
-            Nous nous engageons à fournir des produits de qualité et un service exceptionnel à nos clients.
-            Notre objectif est de rendre votre expérience d'achat simple, rapide et agréable.
+            Nous avons pour mission de fournir à nos clients une expérience d'achat simple, rapide et sécurisée.
+            Nous mettons un point d'honneur à proposer des produits de qualité à des prix compétitifs,
+            tout en garantissant un service client réactif et professionnel.
         </p>
+    </div>
 
+    <div class="section highlight">
+        <h2>Pourquoi nous choisir ?</h2>
+        <ul>
+            <li>✔ Produits soigneusement sélectionnés</li>
+            <li>✔ Interface simple et intuitive</li>
+            <li>✔ Paiement sécurisé</li>
+            <li>✔ Livraison rapide et fiable</li>
+            <li>✔ Support client disponible</li>
+        </ul>
+    </div>
+
+    <div class="section">
         <h2>Notre histoire</h2>
         <p>
-            Fondée en 2026, notre boutique en ligne a été créée pour offrir une plateforme intuitive où
-            vous pouvez trouver les produits que vous aimez, avec des descriptions détaillées et des images claires.
+            Fondée en 2026, notre boutique est née d'une vision simple : faciliter l'accès aux produits de qualité
+            via une plateforme moderne et accessible à tous. Depuis notre lancement, nous travaillons constamment
+            à améliorer nos services pour répondre aux besoins de nos clients.
         </p>
+    </div>
 
-        <h2>Contactez-nous</h2>
+    <div class="section">
+        <h2>Nos valeurs</h2>
         <p>
-            Pour toute question ou suggestion, n'hésitez pas à nous <a href="/contact/">contacter</a>. 
-            Nous sommes toujours ravis d'entendre nos clients.
+            Transparence, qualité, innovation et satisfaction client sont au cœur de tout ce que nous faisons.
+            Nous croyons en une relation de confiance avec nos utilisateurs.
         </p>
-    </main>
+    </div>
 
-    <footer>
-        &copy; 2026 Ma Boutique. Tous droits réservés.
-    </footer>
+    <div class="section">
+        <h2>Contact</h2>
+        <p>
+            Une question, une suggestion ou un besoin d’assistance ?
+            N'hésitez pas à nous contacter.
+        </p>
+        <a href="/contact/" class="btn">Nous contacter</a>
+    </div>
+
+</main>
+
+<footer>
+    &copy; 2026 Ma Boutique. Tous droits réservés.
+</footer>
+
 </body>
 </html>
